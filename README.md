@@ -79,8 +79,34 @@ Training may be computationally expensive, especially without a GPU.
 
 ## Reproducibility and limitations
 
-The scripts are provided as research code. Automated tests, a locked environment and validated cross-platform executions are not yet included. The inference script currently loads its bundled checkpoint with `torch.load(..., weights_only=False)`, which must only be used with **trusted** checkpoint files.
+The scripts are provided as research code. An automated GitHub Actions smoke test checks Python syntax, runs the bundled pretrained model on the full numerical records, and exercises a shortened, one-epoch training run. This does **not** establish full convergence or reproduce every result from a 100-epoch run. A locked environment and validated cross-platform executions are not yet included. The inference script currently loads its bundled checkpoint with `torch.load(..., weights_only=False)`, which must only be used with **trusted** checkpoint files.
 
-## Citation and license
+## Citation
 
-A formal software citation and publication DOI will be added once bibliographic details are confirmed. Please contact the project maintainers about reuse conditions: **no open-source license has yet been selected**.
+**If you use NOMAD-Net in your research, please cite the following manuscript:**
+
+> Quarchioni, S., Nicoletti, V., Gara, F., and García-Macías, E. **NOMAD-Net: An End-to-End Unsupervised Operational Modal Analysis via Deep Modal Reconstruction.** Manuscript submitted to *Automation in Construction* (**under review**).
+
+**Authors and ORCID identifiers:**
+
+- Simone Quarchioni — [0009-0005-3615-9499](https://orcid.org/0009-0005-3615-9499)
+- Vanni Nicoletti — [0000-0002-2566-7966](https://orcid.org/0000-0002-2566-7966)
+- Fabrizio Gara — [0000-0003-1272-0673](https://orcid.org/0000-0003-1272-0673)
+- Enrique García-Macías — [0000-0001-5557-144X](https://orcid.org/0000-0001-5557-144X)
+
+BibTeX (provisional, pending publication details):
+
+```bibtex
+@unpublished{Quarchioni_NOMADNet,
+  author = {Quarchioni, Simone and Nicoletti, Vanni and Gara, Fabrizio and García-Macías, Enrique},
+  title  = {NOMAD-Net: An End-to-End Unsupervised Operational Modal Analysis via Deep Modal Reconstruction},
+  note   = {Manuscript submitted to Automation in Construction; under review}
+}
+```
+
+This is an **unpublished, under-review manuscript**. The final journal reference and DOI will be added after acceptance/publication.
+
+## License
+
+No open-source license has yet been selected. Please contact the project maintainers about reuse conditions.
+
