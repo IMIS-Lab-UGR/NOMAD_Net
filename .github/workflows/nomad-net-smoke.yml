@@ -1,0 +1,63 @@
+name: NOMAD-Net smoke tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Pretrained inference and shortened training
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MPLBACKEND: Agg
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU-only PyTorch and other dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -r requirements.txt
+      - name: Check Python syntax
+        run: python -m py_compile NOMAD_Net.py NOMAD_Net_Use_model.py
+      - name: Run pretrained inference on the supplied numerical records
+        run: |
+          python NOMAD_Net_Use_model.py > inference.log 2>&1 || { tail -n 100 inference.log; exit 1; }
+          tail -n 35 inference.log
+          grep -q 'Frequencies \[Hz\]' inference.log
+          grep -q 'Damping \[%\]' inference.log
+      - name: Prepare a reduced training smoke test
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('NOMAD_Net.py')
+          source = path.read_text(encoding='utf-8')
+          patches = {
+              'epoch = 100 # number of epoch': 'epoch = 1 # smoke test: one epoch',
+              'batch_size = 500 # batch size': 'batch_size = 32 # smoke test: small batches',
+              'N_LAGS = 80 # Hankel lag number': 'N_LAGS = 40 # smoke test: smaller Hankel matrix',
+              'shifts = np.arange(1, 120, 1)': 'shifts = np.arange(1, 8, 1)',
+              'records = df.values': 'records = df.values[:1200]',
+          }
+          for before, after in patches.items():
+              assert source.count(before) == 1, f'Expected one occurrence of {before!r}'
+              source = source.replace(before, after)
+          path.write_text(source, encoding='utf-8')
+          PY
+      - name: Run shortened training and save checkpoint
+        run: |
+          timeout 600 python NOMAD_Net.py > training.log 2>&1 || { tail -n 100 training.log; exit 1; }
+          tail -n 35 training.log
+          test -s NOMAD_Net_model/Model.pt
+          test -s NOMAD_Net_model/Model_Best_Weights.h5
