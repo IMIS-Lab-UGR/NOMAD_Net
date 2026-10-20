@@ -49,6 +49,7 @@ jobs:
               'N_LAGS = 80 # Hankel lag number': 'N_LAGS = 40 # smoke test: smaller Hankel matrix',
               'shifts = np.arange(1, 120, 1)': 'shifts = np.arange(1, 8, 1)',
               'records = df.values': 'records = df.values[:1200]',
+              'nperseg = 1024': 'nperseg = 256 # smoke test: valid PSD segment length',
           }
           for before, after in patches.items():
               assert source.count(before) == 1, f'Expected one occurrence of {before!r}'
