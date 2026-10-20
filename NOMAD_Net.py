@@ -56,7 +56,7 @@ pat = 20 # patience early stopping
 # Load Data
 # =============================================================================
 
-df = pd.read_csv(r"simulated_records.csv")
+df = pd.read_csv(Path(__file__).resolve().parent / "Input_signals" / "Simulated_records.csv")
 records = df.values
 records = records.astype(float)
 
@@ -441,9 +441,9 @@ class EarlyStopping:
 # Train model
 # =============================================================================
 
-ris_ref = np.genfromtxt(r"OMA_CoV-SSI.csv", delimiter=',', dtype=str)
+ris_ref = np.genfromtxt(Path(__file__).resolve().parent / "Classical_OMA_results" / "OMA_CoV-SSI.csv", delimiter=',', dtype=str)
 ris_ref = np.char.replace(ris_ref, 'i', 'j')
-phi_ref = np.vectorize(complex)(ris_ref)[:,[1+2,3+2,5+2,7+2]]
+phi_ref = np.vectorize(complex)(ris_ref)[:, 2:]
 
 output_folder = "training_plots"
 if not os.path.exists(output_folder):
@@ -453,7 +453,9 @@ if not os.path.exists(os.path.join(output_folder,"MAC")):
     os.makedirs(os.path.join(output_folder,"MAC"))
 
 
-early_stopping = EarlyStopping(patience=pat, path='Model_Best_Weights.h5')
+model_dir = Path(__file__).resolve().parent / 'NOMAD_Net_model'
+model_dir.mkdir(exist_ok=True)
+early_stopping = EarlyStopping(patience=pat, path=str(model_dir / 'Model_Best_Weights.h5'))
 
 def train_model(train_loader, val_loader, model, epochs=epoch, warmup_epochs=5):
     
@@ -731,7 +733,7 @@ checkpoint = {
     "resampling": resampling,
     "order": order
 }
-torch.save(checkpoint, 'Model.pt')
+torch.save(checkpoint, model_dir / 'Model.pt')
 
 
 # # Load
@@ -830,7 +832,7 @@ for n in range(N_MODES):
 # MAC matrix
 # ===============================
 
-ris_ref = np.genfromtxt(r"OMA_SSI.csv", delimiter=',', dtype=str)
+ris_ref = np.genfromtxt(Path(__file__).resolve().parent / "Classical_OMA_results" / "OMA_CoV-SSI.csv", delimiter=',', dtype=str)
 ris_ref = np.char.replace(ris_ref, 'i', 'j')
 phi_ref = np.vectorize(complex)(ris_ref)[:,-NGDL:]
 
