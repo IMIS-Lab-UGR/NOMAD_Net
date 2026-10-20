@@ -6,6 +6,7 @@ Created on Mon May 11 19:33:51 2026
 """
 
 import os
+from pathlib import Path
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import numpy as np
 import torch
@@ -21,7 +22,7 @@ from scipy.signal import hilbert
 # Load Data
 # =============================================================================
 
-df = pd.read_csv(r"Simulated_records.csv")
+df = pd.read_csv(Path(__file__).resolve().parent / "Input_signals" / "Simulated_records.csv")
 records = df.values
 records = records.astype(float)
 
@@ -149,7 +150,7 @@ plt.show()
 # Model
 # =============================================================================
 
-checkpoint = torch.load("Model.pt", map_location="cpu", weights_only=False)
+checkpoint = torch.load(Path(__file__).resolve().parent / "NOMAD_Net_model" / "Model.pt", map_location="cpu", weights_only=False)
 
 class MyNet(nn.Module):
     def __init__(self):
@@ -346,7 +347,7 @@ for n in range(N_MODES):
 # MAC matrix
 # =============================================================================
 
-ris_ref = np.genfromtxt(r"OMA_CoV-SSI.csv", delimiter=',', dtype=str)
+ris_ref = np.genfromtxt(Path(__file__).resolve().parent / "Classical_OMA_results" / "OMA_CoV-SSI.csv", delimiter=',', dtype=str)
 ris_ref = np.char.replace(ris_ref, 'i', 'j')
 phi_ref = np.vectorize(complex)(ris_ref)[:,-NGDL:]
 
