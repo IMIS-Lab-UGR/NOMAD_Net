@@ -8,6 +8,12 @@ This repository currently provides a **four-channel numerical example with class
 
 Developed within [IMIS-Lab, University of Granada](https://github.com/IMIS-Lab-UGR).
 
+## Network architecture
+
+![NOMAD-Net neural network architecture](NOMAD_Net_Architecture.jpg)
+
+*Overview of the NOMAD-Net architecture.*
+
 ## Method at a glance
 
 - Input: multichannel vibration measurements arranged as samples × sensors.
